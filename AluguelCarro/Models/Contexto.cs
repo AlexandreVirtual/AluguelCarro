@@ -4,11 +4,11 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace AluguelCarro.Data
+namespace AluguelCarro.Models
 {
-    public class ApplicationDbContext : IdentityDbContext
+    public class Contexto : IdentityDbContext
     {
-        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+        public Contexto(DbContextOptions<Contexto> options)
             : base(options)
         {
         }

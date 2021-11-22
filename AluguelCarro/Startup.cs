@@ -1,4 +1,4 @@
-using AluguelCarro.Data;
+using AluguelCarro.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -27,13 +27,33 @@ namespace AluguelCarro
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<ApplicationDbContext>(options =>
+            services.AddDbContext<Contexto>(options =>
                 options.UseSqlServer(
-                    Configuration.GetConnectionString("DefaultConnection")));
+                    Configuration.GetConnectionString("Conexao")));
             services.AddDatabaseDeveloperPageExceptionFilter();
 
-            services.AddDefaultIdentity<IdentityUser>(options => options.SignIn.RequireConfirmedAccount = true)
-                .AddEntityFrameworkStores<ApplicationDbContext>();
+            services.AddIdentity<Usuario, NiveisAcesso>().AddDefaultUI()
+                .AddEntityFrameworkStores<Contexto>();
+
+            services.ConfigureApplicationCookie(opcoes =>
+            {
+                opcoes.Cookie.HttpOnly = true;
+                opcoes.ExpireTimeSpan = TimeSpan.FromMinutes(50);
+                opcoes.LoginPath = "Usuarios/Login";
+                opcoes.SlidingExpiration = true;
+            });
+
+            services.Configure<IdentityOptions>(opcoes =>
+            {
+                opcoes.Password.RequireDigit = false;
+                opcoes.Password.RequireLowercase = false;
+                opcoes.Password.RequireNonAlphanumeric = false;
+                opcoes.Password.RequireUppercase = false;
+                opcoes.Password.RequiredLength = 6;
+                opcoes.Password.RequiredUniqueChars = 1;
+            });
+
+
             services.AddControllersWithViews();
         }
 
@@ -45,12 +65,7 @@ namespace AluguelCarro
                 app.UseDeveloperExceptionPage();
                 app.UseMigrationsEndPoint();
             }
-            else
-            {
-                app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-                app.UseHsts();
-            }
+           
             app.UseHttpsRedirection();
             app.UseStaticFiles();
 
