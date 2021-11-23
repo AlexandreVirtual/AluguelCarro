@@ -1,3 +1,5 @@
+using AluguelCarro.AcessoDados.Interfaces;
+using AluguelCarro.AcessoDados.Repositorios;
 using AluguelCarro.Models;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
@@ -27,19 +29,15 @@ namespace AluguelCarro
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddDbContext<Contexto>(options =>
-                options.UseSqlServer(
-                    Configuration.GetConnectionString("Conexao")));
-            services.AddDatabaseDeveloperPageExceptionFilter();
-
-            services.AddIdentity<Usuario, NiveisAcesso>().AddDefaultUI()
-                .AddEntityFrameworkStores<Contexto>();
+            services.AddDbContext<Contexto>(options => options.UseSqlServer(Configuration.GetConnectionString("Conexao")));
+            
+            services.AddIdentity<Usuario, NiveisAcesso>().AddDefaultUI().AddEntityFrameworkStores<Contexto>();
 
             services.ConfigureApplicationCookie(opcoes =>
             {
                 opcoes.Cookie.HttpOnly = true;
                 opcoes.ExpireTimeSpan = TimeSpan.FromMinutes(50);
-                opcoes.LoginPath = "Usuarios/Login";
+                opcoes.LoginPath = "/Usuarios/Login";
                 opcoes.SlidingExpiration = true;
             });
 
@@ -53,6 +51,9 @@ namespace AluguelCarro
                 opcoes.Password.RequiredUniqueChars = 1;
             });
 
+            services.AddScoped<INivelAcessoRepositorio, NivelAcessoRepositorio>();
+            services.AddScoped<IUsuarioRepositorio, UsuarioRepositorio>();
+            services.AddScoped<IEnderecoRepositorio, EnderecoRepositorio>();
 
             services.AddControllersWithViews();
         }

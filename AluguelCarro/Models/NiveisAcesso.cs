@@ -8,5 +8,6 @@ namespace AluguelCarro.Models
 {
     public class NiveisAcesso:IdentityRole
     {
+        public string Descricao { get; set; }
     }
 }

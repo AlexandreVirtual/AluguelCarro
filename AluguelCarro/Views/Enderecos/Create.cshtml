@@ -1,0 +1,70 @@
+﻿@model AluguelCarro.Models.Endereco
+
+@{
+    ViewData["Title"] = "Novo endereco";
+}
+
+<div class="border border-light rounded shadow col-md-8">
+    <div class="container">
+        <h3 class="titulo"><i class="fas fa-home fa-lg"></i>Novo endereco</h3>
+        <hr />
+        <div class="row">
+            <div class="col-md-8">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div class="campos">
+                        <div class="form-group">
+                            <label asp-for="Rua" class="control-label"></label>
+                            <input asp-for="Rua" class="form-control form-control-lg" />
+                            <span asp-validation-for="Rua" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="campos">
+                        <div class="form-group">
+                            <label asp-for="Numero" class="control-label">Descrição</label>
+                            <textarea asp-for="Numero" class="form-control form-control-lg"></textarea>
+                            <span asp-validation-for="Numero" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="campos">
+                        <div class="form-group">
+                            <label asp-for="Bairro" class="control-label"></label>
+                            <input asp-for="Bairro" class="form-control form-control-lg" />
+                            <span asp-validation-for="Bairro" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="campos">
+                        <div class="form-group">
+                            <label asp-for="Cidade" class="control-label"></label>
+                            <input asp-for="Cidade" class="form-control form-control-lg" />
+                            <span asp-validation-for="Cidade" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="campos">
+                        <div class="form-group">
+                            <label asp-for="Estado" class="control-label"></label>
+                            <input asp-for="Estado" class="form-control form-control-lg" />
+                            <span asp-validation-for="Estado" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <input asp-for="UsuarioId" type="hidden" />
+
+                    <div class="form-group botoes">
+                        <input type="submit" value="Salvar" class="btn btn-outline-success btn-lg" /> &nbsp;
+                        <a asp-action="Index" asp-controller="Usuarios" class="btn btn-link btn-lg">Voltar</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

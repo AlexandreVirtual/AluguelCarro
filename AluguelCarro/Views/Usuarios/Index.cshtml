@@ -1,0 +1,101 @@
+﻿@model AluguelCarro.Models.Usuario
+@{
+    ViewData["Title"] = "Meus dados";
+}
+
+<div class="dados">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="titulo">
+                <i class="fas fa-address-card fa-lg"></i> &nbsp; Meus dados &nbsp;
+                <a asp-action="Atualizar" asp-controller="Usuarios" asp-route-UsuarioId="@Model.Id" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="right" title="Atualizar dados"><i class="far fa-edit fa-lg"></i></a>
+            </h3>
+        </div>
+        <div class="card-body">
+            <div class="input-group col-8 campos">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-signature fa-lg"></i></span>
+                </div>
+                <input asp-for="Nome" type="text" class="form-control form-control-lg" readonly />
+            </div>
+
+            <div class="input-group col-8 campos">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="far fa-address-card fa-lg"></i></span>
+                </div>
+                <input asp-for="CPF" type="text" class="form-control form-control-lg" readonly />
+            </div>
+
+            <div class="input-group col-8 campos">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="fas fa-phone-square fa-lg"></i></span>
+                </div>
+                <input asp-for="Telefone" type="text" class="form-control form-control-lg" readonly />
+            </div>
+
+            <div class="input-group col-8 campos">
+                <div class="input-group-prepend">
+                    <span class="input-group-text"><i class="far fa-envelope fa-lg"></i></span>
+                </div>
+                <input asp-for="Email" type="text" class="form-control form-control-lg" readonly />
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="enderecos">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="titulo">
+                <i class="fas fa-home fa-lg"></i> &nbsp; Meus endereços &nbsp;
+                <a asp-action="Create" asp-controller="Enderecos" class="btn btn-outline-secondary" data-toggle="tooltip" data-placement="right" title="Novo endereço"><i class="fas fa-plus-circle fa-lg"></i></a>
+            </h3>
+        </div>
+        <div class="card-body">
+           @await  Component.InvokeAsync("Endereco")
+        </div>
+
+    </div>
+</div>
+
+<div class="carros">
+    <div class="card">
+        <div class="card-header">
+            <h3 class="titulo">
+                <i class="fas fa-car fa-lg"></i> &nbsp; Meus carros alugados &nbsp;
+            </h3>
+        </div>
+        <div class="card-body">
+            @await  Component.InvokeAsync("CarrosAlugados")
+        </div>
+
+    </div>
+</div>
+
+<partial name="_ModalExclusao" />
+
+@section Scripts{
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+        function ConfirmarExclusao(id, nome, controller) {
+            $(".Nome").html(nome);
+            $(".modal").modal("show");
+            $(".btnExcluir").on('click', function () {
+                var url = "/" + controller + "/Delete/";
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    data: { id: id },
+                    success: function () {
+                        alert("Registro excluído");
+                        location.reload();
+                    }
+                })
+            })
+        }
+    </script>
+}

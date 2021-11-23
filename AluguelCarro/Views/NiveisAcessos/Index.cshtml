@@ -1,0 +1,72 @@
+﻿@model IEnumerable<AluguelCarro.Models.NiveisAcesso>
+
+@{
+    ViewData["Title"] = "Niveis de acessos cadastrados";
+
+    var controller = this.ViewContext.RouteData.Values["controller"].ToString();
+}
+
+<div class="border border-light rounded shadow">
+    <div class="container">
+        <h3 class="titulo">
+            <i class="fas fa-user-lock fa-lg"></i> &nbsp; Niveis de Acessos &nbsp;
+            <a asp-action="Create" class="btn btn-outline-secondary btn-lg" data-toggle="tooltip" data-placement="right" title="Novo nível de acesso"><i class="fas fa-plus-circle"></i></a>
+        </h3>
+
+        <table class="table table-striped table-hover">
+            <thead class=thead-light>
+                <tr>                   
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Name)
+                    </th>
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Descricao)
+                    </th>
+                    <th scope="col">Opções</th>
+                </tr>
+            </thead>
+            <tbody>
+        @foreach (var item in Model) {
+                <tr>                    
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Name)
+                    </td>
+                    <td>
+                        @Html.DisplayFor(modelItem => item.Descricao)
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@item.Id" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="top" title="Atualizar nível de acesso"><i class="far fa-edit"></i></a> &nbsp;
+                        <a class="btn btn-outline-danger" data-toggle="tooltip" data-placement="top" title="Excluir nível de acesso" onclick="ConfirmarExclusao('@item.Id','@item.Name','@controller')"> <i class="far fa-trash-alt"></i></a>
+                    </td>
+                </tr>
+        }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<partial name="_ModalExclusao" />
+
+@section Scripts{ 
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+        function ConfirmarExclusao(id, nome, controller) {
+            $(".Nome").html(nome);
+            $(".modal").modal("show");
+            $(".btnExcluir").on('click', function () {
+                var url = "/" + controller + "/Delete/";
+                $.ajax({
+                    method: "POST",
+                    url: url,
+                    data: { id: id },
+                    success: function () {
+                        alert("Registro excluído");
+                        location.reload();
+                    }
+                })
+            })
+        }
+    </script>
+}

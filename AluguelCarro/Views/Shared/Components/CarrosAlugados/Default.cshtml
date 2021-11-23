@@ -1,0 +1,21 @@
+﻿@model IEnumerable<AluguelCarro.Models.Aluguel>
+
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+        <div class="col-4">
+            <div class="cartoes">
+                <div class="card">
+                    <img src="@Url.Content(item.Carro.Foto)" class="card-img-top img-fluid" />
+                    <div class="card-body">
+                        <h5 class="card-title">@item.Carro.Marca - @item.Carro.Nome</h5>
+                        <h5>@item.Inicio - @item.Fim</h5>
+                        <h5><span class="badge badge-success">R$ @item.PrecoTotal,00</span></h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+
+</div>
