@@ -1,41 +1,60 @@
 ﻿@model IEnumerable<AluguelCarro.Models.Conta>
 
 @{
-    ViewData["Title"] = "Index";
+    ViewData["Title"] = "Saldos de usuários";
 }
 
-<h1>Index</h1>
+<div class="border border-light rounded shadow">
+    <div class="container">
+        <h3 class="titulo">
+            <i class="far fa-money-bill-alt fa-lg"></i> &nbsp; Saldos de usuários &nbsp;
+            <a asp-action="Create" class="btn btn-outline-secondary btn-lg" data-toggle="tooltip" data-placement="right" title="Novo saldo"><i class="fas fa-plus-circle fa-lg"></i></a>
+        </h3>
 
-<p>
-    <a asp-action="Create">Create New</a>
-</p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>
-                @Html.DisplayNameFor(model => model.Usuario)
-            </th>
-            <th>
-                @Html.DisplayNameFor(model => model.Saldo)
-            </th>
-            <th></th>
-        </tr>
-    </thead>
-    <tbody>
-@foreach (var item in Model) {
-        <tr>
-            <td>
-                @Html.DisplayFor(modelItem => item.Usuario.Id)
-            </td>
-            <td>
-                @Html.DisplayFor(modelItem => item.Saldo)
-            </td>
-            <td>
-                <a asp-action="Edit" asp-route-id="@item.ContaId">Edit</a> |
-                <a asp-action="Details" asp-route-id="@item.ContaId">Details</a> |
-                <a asp-action="Delete" asp-route-id="@item.ContaId">Delete</a>
-            </td>
-        </tr>
+        <table class="table table-striped table-hover">
+            <thead class="thead-light">
+                <tr>
+
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Usuario)
+                    </th>
+
+                    <th scope="col">
+                        @Html.DisplayNameFor(model => model.Saldo)
+                    </th>
+
+                    <th scope="col">Opçoes</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            @Html.DisplayFor(modelItem => item.Usuario.UserName)
+                        </td>
+
+                        <td>
+                            R$@Html.DisplayFor(modelItem => item.Saldo),00
+                        </td>
+
+
+                        <td>
+                            <a asp-action="Edit" asp-route-id="@item.ContaId" class="btn btn-outline-primary" data-toggle="tooltip" data-placement="top" title="Atualizar saldo"><i class="far fa-edit"></i></a>                            
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<partial name="_ModalExclusao" />
+
+@section Scripts{
+    <script>
+        $(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+        })
+    </script>
 }
-    </tbody>
-</table>

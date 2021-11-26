@@ -6,154 +6,97 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using AluguelCarro.Models;
+using AluguelCarro.AcessoDados.Interfaces;
+using Microsoft.Extensions.Logging;
 
 namespace AluguelCarro.Controllers
 {
     public class ContasController : Controller
     {
-        private readonly Contexto _context;
+        private readonly IContaRepositorio _contaRepositorio;
+        private readonly IUsuarioRepositorio _usuarioRepositorio;
+        private readonly ILogger<ContasController> _logger;
 
-        public ContasController(Contexto context)
+        public ContasController(IContaRepositorio contaRepositorio, IUsuarioRepositorio usuarioRepositorio, ILogger<ContasController> logger)
         {
-            _context = context;
+            _contaRepositorio = contaRepositorio;
+            _usuarioRepositorio = usuarioRepositorio;
+            _logger = logger;
         }
-
-        // GET: Contas
+                
         public async Task<IActionResult> Index()
         {
-            var contexto = _context.Contas.Include(c => c.Usuario);
-            return View(await contexto.ToListAsync());
+            _logger.LogInformation("Listando os saldos");
+            return View(await _contaRepositorio.PegarTodos());
         }
-
-        // GET: Contas/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var conta = await _context.Contas
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(m => m.ContaId == id);
-            if (conta == null)
-            {
-                return NotFound();
-            }
-
-            return View(conta);
-        }
-
+        
         // GET: Contas/Create
         public IActionResult Create()
         {
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id");
+            _logger.LogInformation("Criar novo saldo");
+            ViewData["UsuarioId"] = new SelectList(_usuarioRepositorio.PegarTodos(), "Id", "Email");
             return View();
         }
 
-        // POST: Contas/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ContaId,UsuarioId,Saldo")] Conta conta)
         {
             if (ModelState.IsValid)
             {
-                _context.Add(conta);
-                await _context.SaveChangesAsync();
+                await _contaRepositorio.Inserir(conta);
+                _logger.LogInformation("Novo saldo criado");
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id", conta.UsuarioId);
+            _logger.LogError("informações inválidas");
+            ViewData["UsuarioId"] = new SelectList(_usuarioRepositorio.PegarTodos(), "Id", "Email", conta.UsuarioId);
             return View(conta);
         }
 
         // GET: Contas/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _logger.LogInformation("Atualizar conta");
 
-            var conta = await _context.Contas.FindAsync(id);
+            var conta = await _contaRepositorio.PegarPeloId(id);
             if (conta == null)
             {
+                _logger.LogError("Conta não encontrada");
                 return NotFound();
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id", conta.UsuarioId);
+            _logger.LogError("Info. Inválida");
+            ViewData["UsuarioId"] = new SelectList(_usuarioRepositorio.PegarTodos(), "Id", "Email", conta.UsuarioId);
             return View(conta);
         }
 
-        // POST: Contas/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("ContaId,UsuarioId,Saldo")] Conta conta)
         {
             if (id != conta.ContaId)
             {
+                _logger.LogError("Conta não encontrada");
                 return NotFound();
             }
 
             if (ModelState.IsValid)
             {
-                try
-                {
-                    _context.Update(conta);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!ContaExists(conta.ContaId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
+                await _contaRepositorio.Atualizar(conta);
+
+                _logger.LogInformation("Atualizar conta");
+
                 return RedirectToAction(nameof(Index));
             }
-            ViewData["UsuarioId"] = new SelectList(_context.Usuarios, "Id", "Id", conta.UsuarioId);
+            ViewData["UsuarioId"] = new SelectList(await _contaRepositorio.PegarTodos(), "Id", "Email", conta.UsuarioId);
             return View(conta);
         }
-
-        // GET: Contas/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<JsonResult> Delete(int id)
         {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var conta = await _context.Contas
-                .Include(c => c.Usuario)
-                .FirstOrDefaultAsync(m => m.ContaId == id);
-            if (conta == null)
-            {
-                return NotFound();
-            }
-
-            return View(conta);
-        }
-
-        // POST: Contas/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var conta = await _context.Contas.FindAsync(id);
-            _context.Contas.Remove(conta);
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
-
-        private bool ContaExists(int id)
-        {
-            return _context.Contas.Any(e => e.ContaId == id);
+            _logger.LogInformation("Excluindo conta");
+            await _contaRepositorio.Excluir(id);
+            _logger.LogInformation("Conta excluída");
+            return Json("Conta excluída");
         }
     }
 }
